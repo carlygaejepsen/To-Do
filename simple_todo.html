@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍓 Cute Todo List ✨</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% {
+                animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+                transform: translate3d(0,0,0);
+            }
+            40%, 43% {
+                animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+                transform: translate3d(0, -30px, 0);
+            }
+            70% {
+                animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+                transform: translate3d(0, -15px, 0);
+            }
+            90% {
+                transform: translate3d(0,-4px,0);
+            }
+        }
+        .animate-bounce {
+            animation: bounce 2s infinite;
+        }
+        .hover\:scale-\[1\.02\]:hover {
+            transform: scale(1.02);
+        }
+        .bg-white\/80 {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        .bg-white\/70 {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        .backdrop-blur-sm {
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { Plus, X } = lucide;
+
+        function TodoList() {
+            const [tasks, setTasks] = useState([]);
+            const [newTask, setNewTask] = useState("");
+            const [filter, setFilter] = useState("all");
+            const [showBulkUpload, setShowBulkUpload] = useState(false);
+            const [bulkTasks, setBulkTasks] = useState("");
+            const [draggedItem, setDraggedItem] = useState(null);
+            const [expandedTasks, setExpandedTasks] = useState(new Set());
+            const [newSubtask, setNewSubtask] = useState({});
+            const [showBulkSubtask, setShowBulkSubtask] = useState({});
+            const [bulkSubtasks, setBulkSubtasks] = useState({});
+
+            // Load from localStorage on mount
+            useEffect(() => {
+                const savedTasks = localStorage.getItem("myTodoAppTasks2024");
+                const savedExpanded = localStorage.getItem("myTodoAppExpanded2024");
+
+                if (savedTasks) {
+                    try {
+                        const parsed = JSON.parse(savedTasks);
+                        setTasks(parsed);
+                    } catch (e) {
+                        console.log("Could not load saved tasks");
+                        setTasks([
+                            {
+                                id: 1,
+                                text: "Welcome to your to-do list! 🌸",
+                                completed: false,
+                                urgent: false,
+                                easy: false,
+                                subtasks: [],
+                            },
+                            {
+                                id: 2,
+                                text: "Click the strawberry to mark tasks complete! 🍓",
+                                completed: false,
+                                urgent: false,
+                                easy: false,
+                                subtasks: [],
+                            },
+                        ]);
+                    }
+                } else {
+                    setTasks([
+                        {
+                            id: 1,
+                            text: "Welcome to your to-do list! 🌸",
+                            completed: false,
+                            urgent: false,
+                            easy: false,
+                            subtasks: [],
+                        },
+                        {
+                            id: 2,
+                            text: "Click the strawberry to mark tasks complete! 🍓",
+                            completed: false,
+                            urgent: false,
+                            easy: false,
+                            subtasks: [],
+                        },
+                    ]);
+                }
+
+                if (savedExpanded) {
+                    try {
+                        const parsed = JSON.parse(savedExpanded);
+                        setExpandedTasks(new Set(parsed));
+                    } catch (e) {
+                        console.log("Could not load expanded state");
+                    }
+                }
+            }, []);
+
+            // Save to localStorage whenever tasks change
+            useEffect(() => {
+                localStorage.setItem("myTodoAppTasks2024", JSON.stringify(tasks));
+            }, [tasks]);
+
+            // Save expanded state
+            useEffect(() => {
+                localStorage.setItem(
+                    "myTodoAppExpanded2024",
+                    JSON.stringify([...expandedTasks])
+                );
+            }, [expandedTasks]);
+
+            const addTask = () => {
+                if (newTask.trim() !== "") {
+                    setTasks([
+                        ...tasks,
+                        {
+                            id: Date.now(),
+                            text: newTask.trim(),
+                            completed: false,
+                            urgent: false,
+                            easy: false,
+                            subtasks: [],
+                        },
+                    ]);
+                    setNewTask("");
+                }
+            };
+
+            const toggleTask = (id) => {
+                setTasks(
+                    tasks.map((task) =>
+                        task.id === id ? { ...task, completed: !task.completed } : task
+                    )
+                );
+            };
+
+            const toggleSubtask = (taskId, subtaskId) => {
+                setTasks(
+                    tasks.map((task) => {
+                        if (task.id === taskId) {
+                            const updatedSubtasks = task.subtasks.map((subtask) =>
+                                subtask.id === subtaskId
+                                    ? { ...subtask, completed: !subtask.completed }
+                                    : subtask
+                            );
+                            const allSubtasksComplete =
+                                updatedSubtasks.length > 0 &&
+                                updatedSubtasks.every((sub) => sub.completed);
+                            return {
+                                ...task,
+                                subtasks: updatedSubtasks,
+                                completed: allSubtasksComplete ? true : task.completed,
+                            };
+                        }
+                        return task;
+                    })
+                );
+            };
+
+            const addSubtask = (taskId) => {
+                const subtaskText = newSubtask[taskId];
+                if (subtaskText && subtaskText.trim() !== "") {
+                    setTasks(
+                        tasks.map((task) => {
+                            if (task.id === taskId) {
+                                return {
+                                    ...task,
+                                    subtasks: [
+                                        ...task.subtasks,
+                                        {
+                                            id: Date.now() + Math.random(),
+                                            text: subtaskText.trim(),
+                                            completed: false,
+                                        },
+                                    ],
+                                };
+                            }
+                            return task;
+                        })
+                    );
+                    setNewSubtask({ ...newSubtask, [taskId]: "" });
+                }
+            };
+
+            const addBulkSubtasks = (taskId) => {
+                const bulkText = bulkSubtasks[taskId];
+                if (bulkText && bulkText.trim() !== "") {
+                    const newSubtaskItems = bulkText
+                        .split("\n")
+                        .map((line) => line.trim())
+                        .filter((line) => line !== "")
+                        .map((text) => ({
+                            id: Date.now() + Math.random(),
+                            text,
+                            completed: false,
+                        }));
+
+                    setTasks(
+                        tasks.map((task) => {
+                            if (task.id === taskId) {
+                                return {
+                                    ...task,
+                                    subtasks: [...task.subtasks, ...newSubtaskItems],
+                                };
+                            }
+                            return task;
+                        })
+                    );
+                    setBulkSubtasks({ ...bulkSubtasks, [taskId]: "" });
+                    setShowBulkSubtask({ ...showBulkSubtask, [taskId]: false });
+                }
+            };
+
+            const deleteSubtask = (taskId, subtaskId) => {
+                setTasks(
+                    tasks.map((task) => {
+                        if (task.id === taskId) {
+                            return {
+                                ...task,
+                                subtasks: task.subtasks.filter(
+                                    (subtask) => subtask.id !== subtaskId
+                                ),
+                            };
+                        }
+                        return task;
+                    })
+                );
+            };
+
+            const toggleExpanded = (taskId) => {
+                const newExpanded = new Set(expandedTasks);
+                if (newExpanded.has(taskId)) {
+                    newExpanded.delete(taskId);
+                } else {
+                    newExpanded.add(taskId);
+                }
+                setExpandedTasks(newExpanded);
+            };
+
+            const toggleUrgent = (id) => {
+                setTasks(
+                    tasks.map((task) =>
+                        task.id === id
+                            ? {
+                                ...task,
+                                urgent: !task.urgent,
+                                easy: task.urgent ? task.easy : false,
+                            }
+                            : task
+                    )
+                );
+            };
+
+            const toggleEasy = (id) => {
+                setTasks(
+                    tasks.map((task) =>
+                        task.id === id
+                            ? {
+                                ...task,
+                                easy: !task.easy,
+                                urgent: task.easy ? task.urgent : false,
+                            }
+                            : task
+                    )
+                );
+            };
+
+            const deleteTask = (id) => {
+                setTasks(tasks.filter((task) => task.id !== id));
+            };
+
+            const clearCompleted = () => {
+                setTasks(tasks.filter((task) => !task.completed));
+            };
+
+            const addBulkTasks = () => {
+                if (bulkTasks.trim() !== "") {
+                    const newTasks = bulkTasks
+                        .split("\n")
+                        .map((line) => line.trim())
+                        .filter((line) => line !== "")
+                        .map((text) => ({
+                            id: Date.now() + Math.random(),
+                            text,
+                            completed: false,
+                            urgent: false,
+                            easy: false,
+                            subtasks: [],
+                        }));
+
+                    setTasks([...tasks, ...newTasks]);
+                    setBulkTasks("");
+                    setShowBulkUpload(false);
+                }
+            };
+
+            const exportTasks = () => {
+                let exportText = "";
+                tasks.forEach((task) => {
+                    let taskLine = task.text;
+                    if (task.urgent) taskLine += " [PRIORITY]";
+                    if (task.easy) taskLine += " [QUICK]";
+                    if (task.completed) taskLine += " [DONE]";
+                    exportText += taskLine + "\n";
+
+                    task.subtasks.forEach((subtask) => {
+                        let subtaskLine = "  " + subtask.text;
+                        if (subtask.completed) subtaskLine += " [DONE]";
+                        exportText += subtaskLine + "\n";
+                    });
+                    exportText += "\n";
+                });
+
+                navigator.clipboard
+                    .writeText(exportText)
+                    .then(() => {
+                        alert("✅ All tasks copied to clipboard! Paste this somewhere safe.");
+                    })
+                    .catch(() => {
+                        const textarea = document.createElement("textarea");
+                        textarea.value = exportText;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand("copy");
+                        document.body.removeChild(textarea);
+                        alert("✅ All tasks copied to clipboard! Paste this somewhere safe.");
+                    });
+            };
+
+            const exportAsJSON = () => {
+                const exportData = {
+                    tasks: tasks,
+                    exportDate: new Date().toISOString(),
+                    version: "1.0",
+                };
+
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: "application/json" });
+                const url = URL.createObjectURL(dataBlob);
+
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = `cute-todo-list-${
+                    new Date().toISOString().split("T")[0]
+                }.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            };
+
+            const importFromJSON = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importData = JSON.parse(e.target.result);
+
+                        if (importData.tasks && Array.isArray(importData.tasks)) {
+                            const validTasks = importData.tasks.filter(
+                                (task) =>
+                                    task.id &&
+                                    task.text &&
+                                    typeof task.completed === "boolean" &&
+                                    typeof task.urgent === "boolean" &&
+                                    typeof task.easy === "boolean" &&
+                                    Array.isArray(task.subtasks)
+                            );
+
+                            if (validTasks.length > 0) {
+                                setTasks(validTasks);
+                                alert(`✅ Successfully imported ${validTasks.length} tasks!`);
+                            } else {
+                                alert("❌ No valid tasks found in the file.");
+                            }
+                        } else {
+                            alert(
+                                "❌ Invalid file format. Please select a valid to-do list file."
+                            );
+                        }
+                    } catch (error) {
+                        alert(
+                            "❌ Error reading file. Please make sure it's a valid JSON file."
+                        );
+                    }
+                };
+
+                reader.readAsText(file);
+                event.target.value = "";
+            };
+
+            const handleDragStart = (e, task) => {
+                setDraggedItem(task);
+                e.dataTransfer.effectAllowed = "move";
+            };
+
+            const handleDragOver = (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+            };
+
+            const handleDragEnter = (e) => {
+                e.preventDefault();
+            };
+
+            const handleDrop = (e, targetTask) => {
+                e.preventDefault();
+
+                if (!draggedItem || draggedItem.id === targetTask.id) {
+                    setDraggedItem(null);
+                    return;
+                }
+
+                const originalDraggedIndex = tasks.findIndex(
+                    (task) => task.id === draggedItem.id
+                );
+                const originalTargetIndex = tasks.findIndex(
+                    (task) => task.id === targetTask.id
+                );
+
+                const newTasks = [...tasks];
+                const [removed] = newTasks.splice(originalDraggedIndex, 1);
+                newTasks.splice(originalTargetIndex, 0, removed);
+
+                setTasks(newTasks);
+                setDraggedItem(null);
+            };
+
+            const filteredTasks = tasks.filter((task) => {
+                if (filter === "active") return !task.completed;
+                if (filter === "completed") return task.completed;
+                if (filter === "urgent") return task.urgent && !task.completed;
+                if (filter === "easy") return task.easy && !task.completed;
+                return true;
+            });
+
+            const activeCount = tasks.filter((task) => !task.completed).length;
+            const completedCount = tasks.filter((task) => task.completed).length;
+            const urgentCount = tasks.filter(
+                (task) => task.urgent && !task.completed
+            ).length;
+            const easyCount = tasks.filter((task) => task.easy && !task.completed).length;
+
+            const handleKeyPress = (e) => {
+                if (e.key === "Enter") {
+                    addTask();
+                }
+            };
+
+            return (
+                <div
+                    className="min-h-screen p-4"
+                    style={{
+                        background: `linear-gradient(135deg, rgba(253, 242, 248, 0.7), rgba(243, 232, 255, 0.7), rgba(219, 234, 254, 0.7)), url("https://i.imgur.com/lJEnnml.png")`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                        backgroundAttachment: "fixed",
+                    }}
+                >
+                    <div className="max-w-md mx-auto pt-8">
+                        {/* Floating decorative elements */}
+                        <div
+                            className="absolute top-4 left-4 text-pink-300 animate-bounce"
+                            style={{ animationDelay: "0s" }}
+                        >
+                            🐝
+                        </div>
+                        <div
+                            className="absolute top-8 right-8 text-purple-300 animate-bounce"
+                            style={{ animationDelay: "1s" }}
+                        >
+                            🦋
+                        </div>
+                        <div
+                            className="absolute top-16 left-16 text-yellow-300 animate-bounce"
+                            style={{ animationDelay: "2s" }}
+                        >
+                            🦋
+                        </div>
+
+                        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border-4 border-pink-200 p-6 relative overflow-hidden">
+                            {/* Decorative corner elements */}
+                            <div className="absolute top-0 left-0 text-pink-400 text-2xl">🌟</div>
+                            <div className="absolute top-0 right-0 text-purple-400 text-2xl">🌙</div>
+
+                            {/* Header */}
+                            <div className="text-center mb-6">
+                                <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent mb-2">
+                                    ✨ My To-Do List ✨
+                                </h1>
+                                <div className="flex justify-center gap-2 text-2xl">
+                                    <span className="animate-pulse">🌻</span>
+                                    <span className="animate-pulse" style={{ animationDelay: "0.5s" }}>🌿</span>
+                                    <span className="animate-pulse" style={{ animationDelay: "1s" }}>🌸</span>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-2">🎁 Auto-saves locally!</p>
+                            </div>
+
+                            {/* Add new task */}
+                            <div className="bg-gradient-to-r from-pink-100 to-red-100 rounded-2xl p-4 mb-6 border-2 border-pink-200">
+                                <div className="flex gap-3 items-center mb-3">
+                                    <span className="text-2xl">🍓</span>
+                                    <input
+                                        type="text"
+                                        value={newTask}
+                                        onChange={(e) => setNewTask(e.target.value)}
+                                        onKeyPress={handleKeyPress}
+                                        placeholder="Add a new task..."
+                                        className="flex-1 px-4 py-3 bg-white/70 border-2 border-pink-200 rounded-full focus:outline-none focus:ring-4 focus:ring-pink-200 focus:border-pink-400 transition-all text-gray-700"
+                                    />
+                                    <button
+                                        onClick={addTask}
+                                        className="px-6 py-3 bg-gradient-to-r from-pink-400 to-red-400 text-white rounded-full hover:from-pink-500 hover:to-red-500 focus:outline-none focus:ring-4 focus:ring-pink-200 transition-all transform hover:scale-105 shadow-lg"
+                                    >
+                                        <Plus size={20} />
+                                    </button>
+                                </div>
+
+                                {/* Bulk upload toggle */}
+                                <div className="flex justify-center">
+                                    <button
+                                        onClick={() => setShowBulkUpload(!showBulkUpload)}
+                                        className="text-sm text-pink-600 hover:text-pink-800 transition-colors flex items-center gap-2"
+                                    >
+                                        {showBulkUpload ? "✕ Close bulk upload" : "🪄 Add multiple tasks"}
+                                    </button>
+                                </div>
+
+                                {/* Bulk upload area */}
+                                {showBulkUpload && (
+                                    <div className="mt-4 space-y-3">
+                                        <textarea
+                                            value={bulkTasks}
+                                            onChange={(e) => setBulkTasks(e.target.value)}
+                                            placeholder="Paste your tasks here, one per line:
+
+Task 1
+Task 2
+Task 3"
+                                            rows={6}
+                                            className="w-full px-4 py-3 bg-white/70 border-2 border-pink-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-pink-200 focus:border-pink-400 transition-all text-gray-700 resize-none"
+                                        />
+                                        <div className="flex gap-2 justify-end">
+                                            <button
+                                                onClick={() => {
+                                                    setBulkTasks("");
+                                                    setShowBulkUpload(false);
+                                                }}
+                                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={addBulkTasks}
+                                                className="px-6 py-2 bg-gradient-to-r from-pink-400 to-red-400 text-white rounded-full hover:from-pink-500 hover:to-red-500 transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+                                            >
+                                                <span>🪄</span>
+                                                Add All Tasks
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Filter buttons */}
+                            <div className="flex gap-2 mb-6 justify-center flex-wrap">
+                                <button
+                                    onClick={() => setFilter("all")}
+                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                        filter === "all"
+                                            ? "bg-gradient-to-r from-green-200 to-emerald-200 text-green-800 shadow-lg border-2 border-green-300"
+                                            : "bg-white/70 text-gray-600 hover:bg-green-100 border-2 border-transparent"
+                                    }`}
+                                >
+                                    <span>🌱</span>
+                                    All ({tasks.length})
+                                </button>
+                                <button
+                                    onClick={() => setFilter("urgent")}
+                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                        filter === "urgent"
+                                            ? "bg-gradient-to-r from-red-200 to-pink-200 text-red-800 shadow-lg border-2 border-red-300"
+                                            : "bg-white/70 text-gray-600 hover:bg-red-100 border-2 border-transparent"
+                                    }`}
+                                >
+                                    <span>⭐</span>
+                                    Priority ({urgentCount})
+                                </button>
+                                <button
+                                    onClick={() => setFilter("easy")}
+                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                        filter === "easy"
+                                            ? "bg-gradient-to-r from-blue-200 to-cyan-200 text-blue-800 shadow-lg border-2 border-blue-300"
+                                            : "bg-white/70 text-gray-600 hover:bg-blue-100 border-2 border-transparent"
+                                    }`}
+                                >
+                                    <span>🪽</span>
+                                    Quick ({easyCount})
+                                </button>
+                                <button
+                                    onClick={() => setFilter("active")}
+                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                        filter === "active"
+                                            ? "bg-gradient-to-r from-yellow-200 to-orange-200 text-orange-800 shadow-lg border-2 border-yellow-300"
+                                            : "bg-white/70 text-gray-600 hover:bg-yellow-100 border-2 border-transparent"
+                                    }`}
+                                >
+                                    <span>🪴</span>
+                                    Active ({activeCount})
+                                </button>
+                                <button
+                                    onClick={() => setFilter("completed")}
+                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                        filter === "completed"
+                                            ? "bg-gradient-to-r from-purple-200 to-pink-200 text-purple-800 shadow-lg border-2 border-purple-300"
+                                            : "bg-white/70 text-gray-600 hover:bg-purple-100 border-2 border-transparent"
+                                    }`}
+                                >
+                                    <span>🌸</span>
+                                    Done ({completedCount})
+                                </button>
+                            </div>
+
+                            {/* Task list */}
+                            <div className="space-y-3 mb-6">
+                                {filteredTasks.length === 0 ? (
+                                    <div className="text-center py-8">
+                                        <div className="text-6xl mb-4">🔮</div>
+                                        <p className="text-gray-500">
+                                            {filter === "active"
+                                                ? "No active tasks!"
+                                                : filter === "completed"
+                                                ? "No completed tasks yet!"
+                                                : filter === "urgent"
+                                                ? "No priority tasks!"
+                                                : filter === "easy"
+                                                ? "No quick tasks!"
+                                                : "No tasks yet. Add one above!"}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    filteredTasks.map((task) => (
+                                        <div key={task.id} className="space-y-0">
+                                            <div
+                                                draggable
+                                                onDragStart={(e) => handleDragStart(e, task)}
+                                                onDragOver={handleDragOver}
+                                                onDragEnter={handleDragEnter}
+                                                onDrop={(e) => handleDrop(e, task)}
+                                                className={`group flex items-center gap-4 p-4 rounded-2xl transition-all transform hover:scale-[1.02] cursor-move relative ${
+                                                    task.completed
+                                                        ? "bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-200 shadow-lg"
+                                                        : task.urgent
+                                                        ? "bg-gradient-to-r from-pink-50 to-red-50 border-2 border-pink-300 hover:from-pink-100 hover:to-red-100 shadow-md hover:shadow-lg"
+                                                        : task.easy
+                                                        ? "bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-300 hover:from-blue-100 hover:to-cyan-100 shadow-md hover:shadow-lg"
+                                                        : "bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 hover:from-pink-100 hover:to-purple-100 shadow-md hover:shadow-lg"
+                                                } ${draggedItem?.id === task.id ? "opacity-50" : ""}`}
+                                            >
+                                                {/* Priority indicator */}
+                                                {task.urgent && !task.completed && (
+                                                    <div className="absolute -top-2 -left-2 bg-gradient-to-r from-pink-400 to-red-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1">
+                                                        <span>⭐</span>
+                                                        <span className="font-medium">PRIORITY</span>
+                                                    </div>
+                                                )}
+
+                                                {/* Quick indicator */}
+                                                {task.easy && !task.completed && (
+                                                    <div className="absolute -top-2 -left-2 bg-gradient-to-r from-blue-400 to-cyan-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1">
+                                                        <span>🪽</span>
+                                                        <span className="font-medium">QUICK</span>
+                                                    </div>
+                                                )}
+
+                                                {/* Main task row */}
+                                                <div className="flex items-center gap-4 w-full">
+                                                    {/* Drag handle */}
+                                                    <div className="flex-shrink-0 text-gray-400 cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <span className="text-lg">⋮⋮</span>
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => toggleTask(task.id)}
+                                                        className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all transform hover:scale-110 ${
+                                                            task.completed
+                                                                ? "bg-gradient-to-r from-green-400 to-emerald-400 shadow-lg"
+                                                                : "bg-gradient-to-r from-pink-200 to-red-200 hover:from-pink-300 hover:to-red-300 border-2 border-pink-300"
+                                                        }`}
+                                                    >
+                                                        {task.completed ? (
+                                                            <span className="text-white text-sm">✓</span>
+                                                        ) : (
+                                                            <span className="text-lg">🍓</span>
+                                                        )}
+                                                    </button>
+
+                                                    <span
+                                                        className={`flex-1 transition-all ${
+                                                            task.completed
+                                                                ? "text-green-700 line-through opacity-75"
+                                                                : "text-gray-800"
+                                                        }`}
+                                                    >
+                                                        {task.text}
+                                                        {task.subtasks.length > 0 && (
+                                                            <span className="ml-2 text-xs text-gray-500">
+                                                                ({task.subtasks.filter((sub) => sub.completed).length}/{task.subtasks.length})
+                                                            </span>
+                                                        )}
+                                                    </span>
+
+                                                    {/* Subtask toggle button */}
+                                                    {task.subtasks.length > 0 && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleExpanded(task.id);
+                                                            }}
+                                                            className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-all transform hover:scale-110 flex items-center justify-center"
+                                                        >
+                                                            <span className={`text-xs transition-transform ${expandedTasks.has(task.id) ? "rotate-90" : ""}`}>
+                                                                ▶
+                                                            </span>
+                                                        </button>
+                                                    )}
+
+                                                    {/* Priority and Quick toggle buttons */}
+                                                    {!task.completed && (
+                                                        <>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    toggleUrgent(task.id);
+                                                                }}
+                                                                className={`flex-shrink-0 w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
+                                                                    task.urgent
+                                                                        ? "bg-gradient-to-r from-pink-400 to-red-400 text-white shadow-lg"
+                                                                        : "bg-gray-100 hover:bg-pink-100 text-gray-400 hover:text-pink-500"
+                                                                }`}
+                                                                title={task.urgent ? "Remove priority" : "Mark as priority"}
+                                                            >
+                                                                <span className="text-sm">⭐</span>
+                                                            </button>
+
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    toggleEasy(task.id);
+                                                                }}
+                                                                className={`flex-shrink-0 w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
+                                                                    task.easy
+                                                                        ? "bg-gradient-to-r from-blue-400 to-cyan-400 text-white shadow-lg"
+                                                                        : "bg-gray-100 hover:bg-blue-100 text-gray-400 hover:text-blue-500"
+                                                                }`}
+                                                                title={task.easy ? "Remove quick tag" : "Mark as quick task"}
+                                                            >
+                                                                <span className="text-sm">🪽</span>
+                                                            </button>
+                                                        </>
+                                                    )}
+
+                                                    {/* Add subtask button */}
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const newExpanded = new Set(expandedTasks);
+                                                            newExpanded.add(task.id);
+                                                            setExpandedTasks(newExpanded);
+                                                        }}
+                                                        className="flex-shrink-0 w-7 h-7 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-500 hover:text-purple-600 transition-all transform hover:scale-110 flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                                        title="Add subtask"
+                                                    >
+                                                        <Plus size={12} />
+                                                    </button>
+
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            deleteTask(task.id);
+                                                        }}
+                                                        className="flex-shrink-0 w-7 h-7 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 transition-all transform hover:scale-110 flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Subtasks section */}
+                                            {expandedTasks.has(task.id) && (
+                                                <div className="mt-0 ml-16 mr-4 mb-4 space-y-2 bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-200">
+                                                    {/* Add new subtask */}
+                                                    <div className="flex gap-2 items-center">
+                                                        <span className="text-sm">🌱</span>
+                                                        <input
+                                                            type="text"
+                                                            value={newSubtask[task.id] || ""}
+                                                            onChange={(e) =>
+                                                                setNewSubtask({
+                                                                    ...newSubtask,
+                                                                    [task.id]: e.target.value,
+                                                                })
+                                                            }
+                                                            onKeyPress={(e) => {
+                                                                if (e.key === "Enter") {
+                                                                    addSubtask(task.id);
+                                                                }
+                                                            }}
+                                                            placeholder="Add a subtask..."
+                                                            className="flex-1 px-3 py-2 bg-white/70 border border-purple-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition-all text-sm text-gray-700"
+                                                        />
+                                                        <button
+                                                            onClick={() => addSubtask(task.id)}
+                                                            className="px-3 py-2 bg-gradient-to-r from-purple-300 to-pink-300 text-white rounded-full hover:from-purple-400 hover:to-pink-400 transition-all transform hover:scale-105 shadow-sm"
+                                                        >
+                                                            <Plus size={14} />
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Bulk subtask toggle */}
+                                                    <div className="flex justify-center">
+                                                        <button
+                                                            onClick={() =>
+                                                                setShowBulkSubtask({
+                                                                    ...showBulkSubtask,
+                                                                    [task.id]: !showBulkSubtask[task.id],
+                                                                })
+                                                            }
+                                                            className="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-1"
+                                                        >
+                                                            {showBulkSubtask[task.id] ? "✕ Close bulk add" : "🪄 Add multiple subtasks"}
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Bulk subtask area */}
+                                                    {showBulkSubtask[task.id] && (
+                                                        <div className="space-y-2">
+                                                            <textarea
+                                                                value={bulkSubtasks[task.id] || ""}
+                                                                onChange={(e) =>
+                                                                    setBulkSubtasks({
+                                                                        ...bulkSubtasks,
+                                                                        [task.id]: e.target.value,
+                                                                    })
+                                                                }
+                                                                placeholder="Add multiple subtasks, one per line:
+
+Subtask 1
+Subtask 2
+Subtask 3"
+                                                                rows={4}
+                                                                className="w-full px-3 py-2 bg-white/70 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition-all text-sm text-gray-700 resize-none"
+                                                            />
+                                                            <div className="flex gap-2 justify-end">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setBulkSubtasks({
+                                                                            ...bulkSubtasks,
+                                                                            [task.id]: "",
+                                                                        });
+                                                                        setShowBulkSubtask({
+                                                                            ...showBulkSubtask,
+                                                                            [task.id]: false,
+                                                                        });
+                                                                    }}
+                                                                    className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors text-sm"
+                                                                >
+                                                                    Cancel
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => addBulkSubtasks(task.id)}
+                                                                    className="px-4 py-1 bg-gradient-to-r from-purple-300 to-pink-300 text-white rounded-full hover:from-purple-400 hover:to-pink-400 transition-all transform hover:scale-105 shadow-sm flex items-center gap-1 text-sm"
+                                                                >
+                                                                    <span>🪄</span>
+                                                                    Add All
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Existing subtasks */}
+                                                    {task.subtasks.map((subtask) => (
+                                                        <div key={subtask.id} className="flex items-center gap-3 py-2">
+                                                            <button
+                                                                onClick={() => toggleSubtask(task.id, subtask.id)}
+                                                                className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all transform hover:scale-110 ${
+                                                                    subtask.completed
+                                                                        ? "bg-gradient-to-r from-green-300 to-emerald-300 shadow-sm"
+                                                                        : "bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 border border-purple-200"
+                                                                }`}
+                                                            >
+                                                                {subtask.completed ? (
+                                                                    <span className="text-white text-xs">✓</span>
+                                                                ) : (
+                                                                    <span className="text-sm">🌸</span>
+                                                                )}
+                                                            </button>
+
+                                                            <span
+                                                                className={`flex-1 text-sm transition-all ${
+                                                                    subtask.completed
+                                                                        ? "text-green-600 line-through opacity-75"
+                                                                        : "text-gray-700"
+                                                                }`}
+                                                            >
+                                                                {subtask.text}
+                                                            </span>
+
+                                                            <button
+                                                                onClick={() => deleteSubtask(task.id, subtask.id)}
+                                                                className="flex-shrink-0 w-5 h-5 rounded-full bg-red-100 hover:bg-red-200 text-red-400 hover:text-red-500 transition-all transform hover:scale-110 flex items-center justify-center"
+                                                            >
+                                                                <X size={10} />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            {/* Import/Export buttons */}
+                            <div className="space-y-3">
+                                {completedCount > 0 && (
+                                    <button
+                                        onClick={clearCompleted}
+                                        className="w-full py-3 text-sm bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-purple-200"
+                                    >
+                                        <span>🌸</span>
+                                        Clear {completedCount} completed task{completedCount !== 1 ? "s" : ""}
+                                        <span>🌸</span>
+                                    </button>
+                                )}
+
+                                {tasks.length > 0 && (
+                                    <>
+                                        <button
+                                            onClick={exportTasks}
+                                            className="w-full py-3 text-sm bg-gradient-to-r from-blue-100 to-cyan-100 hover:from-blue-200 hover:to-cyan-200 text-blue-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-blue-200"
+                                        >
+                                            <span>🖋️</span>
+                                            Copy All Tasks (Backup)
+                                            <span>🖋️</span>
+                                        </button>
+
+                                        <button
+                                            onClick={exportAsJSON}
+                                            className="w-full py-3 text-sm bg-gradient-to-r from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 text-green-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-green-200"
+                                        >
+                                            <span>🌼</span>
+                                            Download as File
+                                            <span>🌼</span>
+                                        </button>
+                                    </>
+                                )}
+
+                                <div className="relative">
+                                    <input
+                                        type="file"
+                                        accept=".json"
+                                        onChange={importFromJSON}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        id="importFile"
+                                    />
+                                    <label
+                                        htmlFor="importFile"
+                                        className="w-full py-3 text-sm bg-gradient-to-r from-yellow-100 to-orange-100 hover:from-yellow-200 hover:to-orange-200 text-orange-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-yellow-200 cursor-pointer block"
+                                    >
+                                        <span>💌</span>
+                                        Import from File
+                                        <span>💌</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Summary with celebration */}
+                            {tasks.length > 0 && (
+                                <div className="mt-6 pt-4 border-t-2 border-pink-200 text-center">
+                                    {activeCount === 0 && tasks.length > 0 ? (
+                                        <div className="text-lg font-medium bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+                                            🎉 All tasks completed! You're amazing! 🎉
+                                            <div className="flex justify-center gap-2 mt-2 text-2xl">
+                                                <span className="animate-bounce">🐝</span>
+                                                <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>🍄</span>
+                                                <span className="animate-bounce" style={{ animationDelay: "0.4s" }}>✨</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-gray-600 flex items-center justify-center gap-2">
+                                            <span>🌱</span>
+                                            <span>{activeCount} task{activeCount !== 1 ? "s" : ""} remaining</span>
+                                            <span>🌱</span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Bottom decorative elements */}
+                            <div className="absolute bottom-2 left-4 text-pink-300 text-lg">🍄</div>
+                            <div className="absolute bottom-2 right-4 text-purple-300 text-lg">🐛</div>
+                        </div>
+
+                        {/* More floating decorations */}
+                        <div className="absolute bottom-8 left-8 text-green-300 animate-bounce" style={{ animationDelay: "1.5s" }}>🦋</div>
+                        <div className="absolute bottom-12 right-12 text-pink-300 animate-bounce" style={{ animationDelay: "0.5s" }}>🐝</div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<TodoList />, document.getElementById('root'));
+    </script>
+</body>
+</html>
