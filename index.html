@@ -691,20 +691,47 @@
                                                     : "bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 hover:from-pink-100 hover:to-purple-100 shadow-md hover:shadow-lg"
                                             } ${draggedItem?.id === task.id ? "opacity-50" : ""}`
                                         },
-                                            // Tag indicators at top
-                                            (task.project && !task.completed) || (task.urgent && !task.completed) || (task.easy && !task.completed) ? h('div', { className: "mb-2 flex justify-center" },
-                                                task.project && !task.completed && h('div', {
-                                                    className: "bg-gradient-to-r from-indigo-400 to-violet-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
-                                                }, h('span', null, "🐌"), h('span', { className: "font-medium" }, "PROJECT")),
-                                                
-                                                task.urgent && !task.completed && h('div', {
-                                                    className: "bg-gradient-to-r from-pink-400 to-red-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
-                                                }, h('span', null, "⭐"), h('span', { className: "font-medium" }, "PRIORITY")),
+                                            // Tag toggle buttons at top (always visible for incomplete tasks)
+                                            !task.completed && h('div', { className: "mb-2 flex justify-center gap-2" },
+                                                h('button', {
+                                                    onClick: (e) => {
+                                                        e.stopPropagation();
+                                                        toggleUrgent(task.id);
+                                                    },
+                                                    className: `w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
+                                                        task.urgent
+                                                            ? "bg-gradient-to-r from-pink-400 to-red-400 text-white shadow-lg"
+                                                            : "bg-gray-100 hover:bg-pink-100 text-gray-400 hover:text-pink-500"
+                                                    }`,
+                                                    title: task.urgent ? "Remove priority" : "Mark as priority"
+                                                }, h('span', { className: "text-sm" }, "⭐")),
 
-                                                task.easy && !task.completed && h('div', {
-                                                    className: "bg-gradient-to-r from-blue-400 to-cyan-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
-                                                }, h('span', null, "🪽"), h('span', { className: "font-medium" }, "QUICK"))
-                                            ) : null,
+                                                h('button', {
+                                                    onClick: (e) => {
+                                                        e.stopPropagation();
+                                                        toggleEasy(task.id);
+                                                    },
+                                                    className: `w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
+                                                        task.easy
+                                                            ? "bg-gradient-to-r from-blue-400 to-cyan-400 text-white shadow-lg"
+                                                            : "bg-gray-100 hover:bg-blue-100 text-gray-400 hover:text-blue-500"
+                                                    }`,
+                                                    title: task.easy ? "Remove quick tag" : "Mark as quick task"
+                                                }, h('span', { className: "text-sm" }, "🪽")),
+
+                                                h('button', {
+                                                    onClick: (e) => {
+                                                        e.stopPropagation();
+                                                        toggleProject(task.id);
+                                                    },
+                                                    className: `w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
+                                                        task.project
+                                                            ? "bg-gradient-to-r from-indigo-400 to-violet-400 text-white shadow-lg"
+                                                            : "bg-gray-100 hover:bg-indigo-100 text-gray-400 hover:text-indigo-500"
+                                                    }`,
+                                                    title: task.project ? "Remove project tag" : "Mark as long-term project"
+                                                }, h('span', { className: "text-sm" }, "🐌"))
+                                            ),
 
                                             // Main task row
                                             h('div', { className: "flex items-center gap-4 w-full" },
@@ -750,34 +777,25 @@
                                                     h('span', { className: `text-xs transition-transform ${expandedTasks.has(task.id) ? "rotate-90" : ""}` }, "▶")
                                                 ),
 
-                                                // Priority, Quick, and Project toggle buttons
-                                                !task.completed && [
-                                                    h('button', {
-                                                        key: "urgent",
-                                                        onClick: (e) => {
-                                                            e.stopPropagation();
-                                                            toggleUrgent(task.id);
-                                                        },
-                                                        className: `flex-shrink-0 w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
-                                                            task.urgent
-                                                                ? "bg-gradient-to-r from-pink-400 to-red-400 text-white shadow-lg"
-                                                                : "bg-gray-100 hover:bg-pink-100 text-gray-400 hover:text-pink-500"
-                                                        }`,
-                                                        title: task.urgent ? "Remove priority" : "Mark as priority"
-                                                    }, h('span', { className: "text-sm" }, "⭐")),
+                                                // Add subtask button
+                                                h('button', {
+                                                    onClick: (e) => {
+                                                        e.stopPropagation();
+                                                        const newExpanded = new Set(expandedTasks);
+                                                        newExpanded.add(task.id);
+                                                        setExpandedTasks(newExpanded);
+                                                    },
+                                                    className: "flex-shrink-0 w-7 h-7 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-500 hover:text-purple-600 transition-all transform hover:scale-110 flex items-center justify-center opacity-0 group-hover:opacity-100",
+                                                    title: "Add subtask"
+                                                }, h(Plus, { size: 12 })),
 
-                                                    h('button', {
-                                                        key: "easy",
-                                                        onClick: (e) => {
-                                                            e.stopPropagation();
-                                                            toggleEasy(task.id);
-                                                        },
-                                                        className: `flex-shrink-0 w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
-                                                            task.easy
-                                                                ? "bg-gradient-to-r from-blue-400 to-cyan-400 text-white shadow-lg"
-                                                                : "bg-gray-100 hover:bg-blue-100 text-gray-400 hover:text-blue-500"
-                                                        }`,
-                                                        title: task.easy ? "Remove quick tag" : "Mark as quick task"
+                                                h('button', {
+                                                    onClick: (e) => {
+                                                        e.stopPropagation();
+                                                        deleteTask(task.id);
+                                                    },
+                                                    className: "flex-shrink-0 w-7 h-7 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 transition-all transform hover:scale-110 flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                                }, h(X, { size: 14 }))         title: task.easy ? "Remove quick tag" : "Mark as quick task"
                                                     }, h('span', { className: "text-sm" }, "🪽")),
 
                                                     h('button', {
