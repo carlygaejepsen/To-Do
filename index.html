@@ -609,52 +609,52 @@
                         h('div', { className: "flex gap-2 mb-6 justify-center flex-wrap" },
                             h('button', {
                                 onClick: () => setFilter("all"),
-                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex flex-col items-center gap-1 ${
                                     filter === "all"
                                         ? "bg-gradient-to-r from-green-200 to-emerald-200 text-green-800 shadow-lg border-2 border-green-300"
                                         : "bg-white/70 text-gray-600 hover:bg-green-100 border-2 border-transparent"
                                 }`
-                            }, h('span', null, "🌱"), `All (${tasks.length})`),
+                            }, h('span', { className: "text-lg" }, "🌱"), h('span', { className: "text-xs" }, `All (${tasks.length})`)),
                             h('button', {
                                 onClick: () => setFilter("urgent"),
-                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex flex-col items-center gap-1 ${
                                     filter === "urgent"
                                         ? "bg-gradient-to-r from-red-200 to-pink-200 text-red-800 shadow-lg border-2 border-red-300"
                                         : "bg-white/70 text-gray-600 hover:bg-red-100 border-2 border-transparent"
                                 }`
-                            }, h('span', null, "⭐"), `Priority (${urgentCount})`),
+                            }, h('span', { className: "text-lg" }, "⭐"), h('span', { className: "text-xs" }, `Priority (${urgentCount})`)),
                             h('button', {
                                 onClick: () => setFilter("easy"),
-                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex flex-col items-center gap-1 ${
                                     filter === "easy"
                                         ? "bg-gradient-to-r from-blue-200 to-cyan-200 text-blue-800 shadow-lg border-2 border-blue-300"
                                         : "bg-white/70 text-gray-600 hover:bg-blue-100 border-2 border-transparent"
                                 }`
-                            }, h('span', null, "🪽"), `Quick (${easyCount})`),
+                            }, h('span', { className: "text-lg" }, "🪽"), h('span', { className: "text-xs" }, `Quick (${easyCount})`)),
                             h('button', {
                                 onClick: () => setFilter("project"),
-                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex flex-col items-center gap-1 ${
                                     filter === "project"
                                         ? "bg-gradient-to-r from-indigo-200 to-violet-200 text-indigo-800 shadow-lg border-2 border-indigo-300"
                                         : "bg-white/70 text-gray-600 hover:bg-indigo-100 border-2 border-transparent"
                                 }`
-                            }, h('span', null, "🐌"), `Projects (${projectCount})`),
+                            }, h('span', { className: "text-lg" }, "🐌"), h('span', { className: "text-xs" }, `Projects (${projectCount})`)),
                             h('button', {
                                 onClick: () => setFilter("active"),
-                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex flex-col items-center gap-1 ${
                                     filter === "active"
                                         ? "bg-gradient-to-r from-yellow-200 to-orange-200 text-orange-800 shadow-lg border-2 border-yellow-300"
                                         : "bg-white/70 text-gray-600 hover:bg-yellow-100 border-2 border-transparent"
                                 }`
-                            }, h('span', null, "🪴"), `Active (${activeCount})`),
+                            }, h('span', { className: "text-lg" }, "🪴"), h('span', { className: "text-xs" }, `Active (${activeCount})`)),
                             h('button', {
                                 onClick: () => setFilter("completed"),
-                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex flex-col items-center gap-1 ${
                                     filter === "completed"
                                         ? "bg-gradient-to-r from-purple-200 to-pink-200 text-purple-800 shadow-lg border-2 border-purple-300"
                                         : "bg-white/70 text-gray-600 hover:bg-purple-100 border-2 border-transparent"
                                 }`
-                            }, h('span', null, "🌸"), `Done (${completedCount})`)
+                            }, h('span', { className: "text-lg" }, "🌸"), h('span', { className: "text-xs" }, `Done (${completedCount})`))
                         ),
 
                         // Task list
