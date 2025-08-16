@@ -84,7 +84,7 @@
                         setTasks([
                             {
                                 id: 1,
-                                text: "Welcome to your to-do list! 🌸",
+                                text: "Welcome to your to-do list! 🌱",
                                 completed: false,
                                 urgent: false,
                                 easy: false,
@@ -106,7 +106,7 @@
                     setTasks([
                         {
                             id: 1,
-                            text: "Welcome to your to-do list! 🌸",
+                            text: "Welcome to your to-do list! 🌱",
                             completed: false,
                             urgent: false,
                             easy: false,
@@ -547,11 +547,11 @@
                                 "✨ My To-Do List ✨"
                             ),
                             h('div', { className: "flex justify-center gap-2 text-2xl" },
-                                h('span', { className: "animate-pulse" }, "🌻"),
-                                h('span', { className: "animate-pulse", style: { animationDelay: "0.5s" } }, "🌿"),
-                                h('span', { className: "animate-pulse", style: { animationDelay: "1s" } }, "🌸")
+                                h('span', { className: "animate-pulse" }, "🌿"),
+                                h('span', { className: "animate-pulse", style: { animationDelay: "0.5s" } }, "🌻"),
+                                h('span', { className: "animate-pulse", style: { animationDelay: "1s" } }, "🪻")
                             ),
-                            h('p', { className: "text-xs text-gray-500 mt-2" }, "🎁 Auto-saves locally!")
+                            h('p', { className: "text-xs text-gray-500 mt-2" }, "💽 Auto-saves locally!")
                         ),
 
                         // Add new task
@@ -614,7 +614,7 @@
                                         ? "bg-gradient-to-r from-green-200 to-emerald-200 text-green-800 shadow-lg border-2 border-green-300"
                                         : "bg-white/70 text-gray-600 hover:bg-green-100 border-2 border-transparent"
                                 }`
-                            }, h('span', { className: "text-lg" }, "🌱"), h('span', { className: "text-xs" }, `All (${tasks.length})`)),
+                            }, h('span', { className: "text-lg" }, "🌼"), h('span', { className: "text-xs" }, `All (${tasks.length})`)),
                             h('button', {
                                 onClick: () => setFilter("urgent"),
                                 className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex flex-col items-center gap-1 ${
@@ -654,7 +654,7 @@
                                         ? "bg-gradient-to-r from-purple-200 to-pink-200 text-purple-800 shadow-lg border-2 border-purple-300"
                                         : "bg-white/70 text-gray-600 hover:bg-purple-100 border-2 border-transparent"
                                 }`
-                            }, h('span', { className: "text-lg" }, "🌸"), h('span', { className: "text-xs" }, `Done (${completedCount})`))
+                            }, h('span', { className: "text-lg" }, "🌱"), h('span', { className: "text-xs" }, `Done (${completedCount})`))
                         ),
 
                         // Task list
@@ -898,7 +898,7 @@
                                                     },
                                                         subtask.completed ?
                                                             h('span', { className: "text-white text-xs" }, "✓") :
-                                                            h('span', { className: "text-sm" }, "🌸")
+                                                            h('span', { className: "text-sm" }, "🌱")
                                                     ),
 
                                                     h('span', {
@@ -925,7 +925,7 @@
                             completedCount > 0 && h('button', {
                                 onClick: clearCompleted,
                                 className: "w-full py-3 text-sm bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-purple-200"
-                            }, h('span', null, "🌸"), `Clear ${completedCount} completed task${completedCount !== 1 ? "s" : ""}`, h('span', null, "🌸")),
+                            }, h('span', null, "🌱"), `Clear ${completedCount} completed task${completedCount !== 1 ? "s" : ""}`, h('span', null, "🌱")),
 
                             tasks.length > 0 && [
                                 h('button', {
@@ -968,9 +968,9 @@
                                     )
                                 ) :
                                 h('div', { className: "text-gray-600 flex items-center justify-center gap-2" },
-                                    h('span', null, "🌱"),
+                                    h('span', null, "🌼"),
                                     h('span', null, `${activeCount} task${activeCount !== 1 ? "s" : ""} remaining`),
-                                    h('span', null, "🌱")
+                                    h('span', null, "🌼")
                                 )
                         ),
 
