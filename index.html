@@ -88,6 +88,7 @@
                                 completed: false,
                                 urgent: false,
                                 easy: false,
+                                project: false,
                                 subtasks: [],
                             },
                             {
@@ -96,6 +97,7 @@
                                 completed: false,
                                 urgent: false,
                                 easy: false,
+                                project: false,
                                 subtasks: [],
                             },
                         ]);
@@ -108,6 +110,7 @@
                             completed: false,
                             urgent: false,
                             easy: false,
+                            project: false,
                             subtasks: [],
                         },
                         {
@@ -116,6 +119,7 @@
                             completed: false,
                             urgent: false,
                             easy: false,
+                            project: false,
                             subtasks: [],
                         },
                     ]);
@@ -147,15 +151,16 @@
             const addTask = () => {
                 if (newTask.trim() !== "") {
                     setTasks([
-                        ...tasks,
                         {
                             id: Date.now(),
                             text: newTask.trim(),
                             completed: false,
                             urgent: false,
                             easy: false,
+                            project: false,
                             subtasks: [],
                         },
+                        ...tasks
                     ]);
                     setNewTask("");
                 }
@@ -272,6 +277,21 @@
                 setExpandedTasks(newExpanded);
             };
 
+            const toggleProject = (id) => {
+                setTasks(
+                    tasks.map((task) =>
+                        task.id === id
+                            ? {
+                                ...task,
+                                project: !task.project,
+                                urgent: task.project ? task.urgent : false,
+                                easy: task.project ? task.easy : false,
+                            }
+                            : task
+                    )
+                );
+            };
+
             const toggleUrgent = (id) => {
                 setTasks(
                     tasks.map((task) =>
@@ -280,6 +300,7 @@
                                 ...task,
                                 urgent: !task.urgent,
                                 easy: task.urgent ? task.easy : false,
+                                project: task.urgent ? task.project : false,
                             }
                             : task
                     )
@@ -294,6 +315,7 @@
                                 ...task,
                                 easy: !task.easy,
                                 urgent: task.easy ? task.urgent : false,
+                                project: task.easy ? task.project : false,
                             }
                             : task
                     )
@@ -320,10 +342,11 @@
                             completed: false,
                             urgent: false,
                             easy: false,
+                            project: false,
                             subtasks: [],
                         }));
 
-                    setTasks([...tasks, ...newTasks]);
+                    setTasks([...newTasks, ...tasks]);
                     setBulkTasks("");
                     setShowBulkUpload(false);
                 }
@@ -335,6 +358,7 @@
                     let taskLine = task.text;
                     if (task.urgent) taskLine += " [PRIORITY]";
                     if (task.easy) taskLine += " [QUICK]";
+                    if (task.project) taskLine += " [PROJECT]";
                     if (task.completed) taskLine += " [DONE]";
                     exportText += taskLine + "\n";
 
@@ -401,6 +425,7 @@
                                     typeof task.completed === "boolean" &&
                                     typeof task.urgent === "boolean" &&
                                     typeof task.easy === "boolean" &&
+                                    typeof task.project === "boolean" &&
                                     Array.isArray(task.subtasks)
                             );
 
@@ -468,6 +493,7 @@
                 if (filter === "completed") return task.completed;
                 if (filter === "urgent") return task.urgent && !task.completed;
                 if (filter === "easy") return task.easy && !task.completed;
+                if (filter === "project") return task.project && !task.completed;
                 return true;
             });
 
@@ -477,6 +503,7 @@
                 (task) => task.urgent && !task.completed
             ).length;
             const easyCount = tasks.filter((task) => task.easy && !task.completed).length;
+            const projectCount = tasks.filter((task) => task.project && !task.completed).length;
 
             const handleKeyPress = (e) => {
                 if (e.key === "Enter") {
@@ -605,6 +632,14 @@
                                 }`
                             }, h('span', null, "🪽"), `Quick (${easyCount})`),
                             h('button', {
+                                onClick: () => setFilter("project"),
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                    filter === "project"
+                                        ? "bg-gradient-to-r from-indigo-200 to-violet-200 text-indigo-800 shadow-lg border-2 border-indigo-300"
+                                        : "bg-white/70 text-gray-600 hover:bg-indigo-100 border-2 border-transparent"
+                                }`
+                            }, h('span', null, "🐌"), `Projects (${projectCount})`),
+                            h('button', {
                                 onClick: () => setFilter("active"),
                                 className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
                                     filter === "active"
@@ -632,6 +667,7 @@
                                         filter === "completed" ? "No completed tasks yet!" :
                                         filter === "urgent" ? "No priority tasks!" :
                                         filter === "easy" ? "No quick tasks!" :
+                                        filter === "project" ? "No projects!" :
                                         "No tasks yet. Add one above!"
                                     )
                                 ) :
@@ -650,9 +686,16 @@
                                                     ? "bg-gradient-to-r from-pink-50 to-red-50 border-2 border-pink-300 hover:from-pink-100 hover:to-red-100 shadow-md hover:shadow-lg"
                                                     : task.easy
                                                     ? "bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-300 hover:from-blue-100 hover:to-cyan-100 shadow-md hover:shadow-lg"
+                                                    : task.project
+                                                    ? "bg-gradient-to-r from-indigo-50 to-violet-50 border-2 border-indigo-300 hover:from-indigo-100 hover:to-violet-100 shadow-md hover:shadow-lg"
                                                     : "bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 hover:from-pink-100 hover:to-purple-100 shadow-md hover:shadow-lg"
                                             } ${draggedItem?.id === task.id ? "opacity-50" : ""}`
                                         },
+                                            // Project indicator
+                                            task.project && !task.completed && h('div', {
+                                                className: "absolute -top-2 -left-2 bg-gradient-to-r from-indigo-400 to-violet-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
+                                            }, h('span', null, "🐌"), h('span', { className: "font-medium" }, "PROJECT")),
+
                                             // Priority indicator
                                             task.urgent && !task.completed && h('div', {
                                                 className: "absolute -top-2 -left-2 bg-gradient-to-r from-pink-400 to-red-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
@@ -707,7 +750,7 @@
                                                     h('span', { className: `text-xs transition-transform ${expandedTasks.has(task.id) ? "rotate-90" : ""}` }, "▶")
                                                 ),
 
-                                                // Priority and Quick toggle buttons
+                                                // Priority, Quick, and Project toggle buttons
                                                 !task.completed && [
                                                     h('button', {
                                                         key: "urgent",
@@ -735,7 +778,21 @@
                                                                 : "bg-gray-100 hover:bg-blue-100 text-gray-400 hover:text-blue-500"
                                                         }`,
                                                         title: task.easy ? "Remove quick tag" : "Mark as quick task"
-                                                    }, h('span', { className: "text-sm" }, "🪽"))
+                                                    }, h('span', { className: "text-sm" }, "🪽")),
+
+                                                    h('button', {
+                                                        key: "project",
+                                                        onClick: (e) => {
+                                                            e.stopPropagation();
+                                                            toggleProject(task.id);
+                                                        },
+                                                        className: `flex-shrink-0 w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
+                                                            task.project
+                                                                ? "bg-gradient-to-r from-indigo-400 to-violet-400 text-white shadow-lg"
+                                                                : "bg-gray-100 hover:bg-indigo-100 text-gray-400 hover:text-indigo-500"
+                                                        }`,
+                                                        title: task.project ? "Remove project tag" : "Mark as long-term project"
+                                                    }, h('span', { className: "text-sm" }, "🐌"))
                                                 ],
 
                                                 // Add subtask button
