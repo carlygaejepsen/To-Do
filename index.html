@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🍓 Cute Todo List ✨</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes bounce {
@@ -48,8 +47,16 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
-        const { Plus, X } = lucide;
+        const { useState, useEffect, createElement: h } = React;
+
+        // Simple icon components
+        const Plus = () => h('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
+            h('path', { d: 'M12 5v14M5 12h14' })
+        );
+        
+        const X = ({ size = 14 }) => h('svg', { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
+            h('path', { d: 'M18 6 6 18M6 6l12 12' })
+        );
 
         function TodoList() {
             const [tasks, setTasks] = useState([]);
@@ -477,571 +484,458 @@
                 }
             };
 
-            return (
-                <div
-                    className="min-h-screen p-4"
-                    style={{
-                        background: `linear-gradient(135deg, rgba(253, 242, 248, 0.7), rgba(243, 232, 255, 0.7), rgba(219, 234, 254, 0.7)), url("https://i.imgur.com/lJEnnml.png")`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
-                        backgroundAttachment: "fixed",
-                    }}
-                >
-                    <div className="max-w-md mx-auto pt-8">
-                        {/* Floating decorative elements */}
-                        <div
-                            className="absolute top-4 left-4 text-pink-300 animate-bounce"
-                            style={{ animationDelay: "0s" }}
-                        >
-                            🐝
-                        </div>
-                        <div
-                            className="absolute top-8 right-8 text-purple-300 animate-bounce"
-                            style={{ animationDelay: "1s" }}
-                        >
-                            🦋
-                        </div>
-                        <div
-                            className="absolute top-16 left-16 text-yellow-300 animate-bounce"
-                            style={{ animationDelay: "2s" }}
-                        >
-                            🦋
-                        </div>
+            return h('div', {
+                className: "min-h-screen p-4",
+                style: {
+                    background: `linear-gradient(135deg, rgba(253, 242, 248, 0.7), rgba(243, 232, 255, 0.7), rgba(219, 234, 254, 0.7)), url("https://i.imgur.com/lJEnnml.png")`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundAttachment: "fixed",
+                }
+            }, 
+                h('div', { className: "max-w-md mx-auto pt-8" },
+                    // Floating decorative elements
+                    h('div', {
+                        className: "absolute top-4 left-4 text-pink-300 animate-bounce",
+                        style: { animationDelay: "0s" }
+                    }, "🐝"),
+                    h('div', {
+                        className: "absolute top-8 right-8 text-purple-300 animate-bounce",
+                        style: { animationDelay: "1s" }
+                    }, "🦋"),
+                    h('div', {
+                        className: "absolute top-16 left-16 text-yellow-300 animate-bounce",
+                        style: { animationDelay: "2s" }
+                    }, "🦋"),
 
-                        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border-4 border-pink-200 p-6 relative overflow-hidden">
-                            {/* Decorative corner elements */}
-                            <div className="absolute top-0 left-0 text-pink-400 text-2xl">🌟</div>
-                            <div className="absolute top-0 right-0 text-purple-400 text-2xl">🌙</div>
+                    h('div', { className: "bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border-4 border-pink-200 p-6 relative overflow-hidden" },
+                        // Decorative corner elements
+                        h('div', { className: "absolute top-0 left-0 text-pink-400 text-2xl" }, "🌟"),
+                        h('div', { className: "absolute top-0 right-0 text-purple-400 text-2xl" }, "🌙"),
 
-                            {/* Header */}
-                            <div className="text-center mb-6">
-                                <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent mb-2">
-                                    ✨ My To-Do List ✨
-                                </h1>
-                                <div className="flex justify-center gap-2 text-2xl">
-                                    <span className="animate-pulse">🌻</span>
-                                    <span className="animate-pulse" style={{ animationDelay: "0.5s" }}>🌿</span>
-                                    <span className="animate-pulse" style={{ animationDelay: "1s" }}>🌸</span>
-                                </div>
-                                <p className="text-xs text-gray-500 mt-2">🎁 Auto-saves locally!</p>
-                            </div>
+                        // Header
+                        h('div', { className: "text-center mb-6" },
+                            h('h1', { className: "text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent mb-2" },
+                                "✨ My To-Do List ✨"
+                            ),
+                            h('div', { className: "flex justify-center gap-2 text-2xl" },
+                                h('span', { className: "animate-pulse" }, "🌻"),
+                                h('span', { className: "animate-pulse", style: { animationDelay: "0.5s" } }, "🌿"),
+                                h('span', { className: "animate-pulse", style: { animationDelay: "1s" } }, "🌸")
+                            ),
+                            h('p', { className: "text-xs text-gray-500 mt-2" }, "🎁 Auto-saves locally!")
+                        ),
 
-                            {/* Add new task */}
-                            <div className="bg-gradient-to-r from-pink-100 to-red-100 rounded-2xl p-4 mb-6 border-2 border-pink-200">
-                                <div className="flex gap-3 items-center mb-3">
-                                    <span className="text-2xl">🍓</span>
-                                    <input
-                                        type="text"
-                                        value={newTask}
-                                        onChange={(e) => setNewTask(e.target.value)}
-                                        onKeyPress={handleKeyPress}
-                                        placeholder="Add a new task..."
-                                        className="flex-1 px-4 py-3 bg-white/70 border-2 border-pink-200 rounded-full focus:outline-none focus:ring-4 focus:ring-pink-200 focus:border-pink-400 transition-all text-gray-700"
-                                    />
-                                    <button
-                                        onClick={addTask}
-                                        className="px-6 py-3 bg-gradient-to-r from-pink-400 to-red-400 text-white rounded-full hover:from-pink-500 hover:to-red-500 focus:outline-none focus:ring-4 focus:ring-pink-200 transition-all transform hover:scale-105 shadow-lg"
-                                    >
-                                        <Plus size={20} />
-                                    </button>
-                                </div>
+                        // Add new task
+                        h('div', { className: "bg-gradient-to-r from-pink-100 to-red-100 rounded-2xl p-4 mb-6 border-2 border-pink-200" },
+                            h('div', { className: "flex gap-3 items-center mb-3" },
+                                h('span', { className: "text-2xl" }, "🍓"),
+                                h('input', {
+                                    type: "text",
+                                    value: newTask,
+                                    onChange: (e) => setNewTask(e.target.value),
+                                    onKeyPress: handleKeyPress,
+                                    placeholder: "Add a new task...",
+                                    className: "flex-1 px-4 py-3 bg-white/70 border-2 border-pink-200 rounded-full focus:outline-none focus:ring-4 focus:ring-pink-200 focus:border-pink-400 transition-all text-gray-700"
+                                }),
+                                h('button', {
+                                    onClick: addTask,
+                                    className: "px-6 py-3 bg-gradient-to-r from-pink-400 to-red-400 text-white rounded-full hover:from-pink-500 hover:to-red-500 focus:outline-none focus:ring-4 focus:ring-pink-200 transition-all transform hover:scale-105 shadow-lg"
+                                }, h(Plus))
+                            ),
 
-                                {/* Bulk upload toggle */}
-                                <div className="flex justify-center">
-                                    <button
-                                        onClick={() => setShowBulkUpload(!showBulkUpload)}
-                                        className="text-sm text-pink-600 hover:text-pink-800 transition-colors flex items-center gap-2"
-                                    >
-                                        {showBulkUpload ? "✕ Close bulk upload" : "🪄 Add multiple tasks"}
-                                    </button>
-                                </div>
+                            // Bulk upload toggle
+                            h('div', { className: "flex justify-center" },
+                                h('button', {
+                                    onClick: () => setShowBulkUpload(!showBulkUpload),
+                                    className: "text-sm text-pink-600 hover:text-pink-800 transition-colors flex items-center gap-2"
+                                }, showBulkUpload ? "✕ Close bulk upload" : "🪄 Add multiple tasks")
+                            ),
 
-                                {/* Bulk upload area */}
-                                {showBulkUpload && (
-                                    <div className="mt-4 space-y-3">
-                                        <textarea
-                                            value={bulkTasks}
-                                            onChange={(e) => setBulkTasks(e.target.value)}
-                                            placeholder="Paste your tasks here, one per line:
+                            // Bulk upload area
+                            showBulkUpload && h('div', { className: "mt-4 space-y-3" },
+                                h('textarea', {
+                                    value: bulkTasks,
+                                    onChange: (e) => setBulkTasks(e.target.value),
+                                    placeholder: "Paste your tasks here, one per line:\n\nTask 1\nTask 2\nTask 3",
+                                    rows: 6,
+                                    className: "w-full px-4 py-3 bg-white/70 border-2 border-pink-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-pink-200 focus:border-pink-400 transition-all text-gray-700 resize-none"
+                                }),
+                                h('div', { className: "flex gap-2 justify-end" },
+                                    h('button', {
+                                        onClick: () => {
+                                            setBulkTasks("");
+                                            setShowBulkUpload(false);
+                                        },
+                                        className: "px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors"
+                                    }, "Cancel"),
+                                    h('button', {
+                                        onClick: addBulkTasks,
+                                        className: "px-6 py-2 bg-gradient-to-r from-pink-400 to-red-400 text-white rounded-full hover:from-pink-500 hover:to-red-500 transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+                                    }, h('span', null, "🪄"), "Add All Tasks")
+                                )
+                            )
+                        ),
 
-Task 1
-Task 2
-Task 3"
-                                            rows={6}
-                                            className="w-full px-4 py-3 bg-white/70 border-2 border-pink-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-pink-200 focus:border-pink-400 transition-all text-gray-700 resize-none"
-                                        />
-                                        <div className="flex gap-2 justify-end">
-                                            <button
-                                                onClick={() => {
-                                                    setBulkTasks("");
-                                                    setShowBulkUpload(false);
-                                                }}
-                                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors"
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                onClick={addBulkTasks}
-                                                className="px-6 py-2 bg-gradient-to-r from-pink-400 to-red-400 text-white rounded-full hover:from-pink-500 hover:to-red-500 transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
-                                            >
-                                                <span>🪄</span>
-                                                Add All Tasks
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                        // Filter buttons
+                        h('div', { className: "flex gap-2 mb-6 justify-center flex-wrap" },
+                            h('button', {
+                                onClick: () => setFilter("all"),
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                    filter === "all"
+                                        ? "bg-gradient-to-r from-green-200 to-emerald-200 text-green-800 shadow-lg border-2 border-green-300"
+                                        : "bg-white/70 text-gray-600 hover:bg-green-100 border-2 border-transparent"
+                                }`
+                            }, h('span', null, "🌱"), `All (${tasks.length})`),
+                            h('button', {
+                                onClick: () => setFilter("urgent"),
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                    filter === "urgent"
+                                        ? "bg-gradient-to-r from-red-200 to-pink-200 text-red-800 shadow-lg border-2 border-red-300"
+                                        : "bg-white/70 text-gray-600 hover:bg-red-100 border-2 border-transparent"
+                                }`
+                            }, h('span', null, "⭐"), `Priority (${urgentCount})`),
+                            h('button', {
+                                onClick: () => setFilter("easy"),
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                    filter === "easy"
+                                        ? "bg-gradient-to-r from-blue-200 to-cyan-200 text-blue-800 shadow-lg border-2 border-blue-300"
+                                        : "bg-white/70 text-gray-600 hover:bg-blue-100 border-2 border-transparent"
+                                }`
+                            }, h('span', null, "🪽"), `Quick (${easyCount})`),
+                            h('button', {
+                                onClick: () => setFilter("active"),
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                    filter === "active"
+                                        ? "bg-gradient-to-r from-yellow-200 to-orange-200 text-orange-800 shadow-lg border-2 border-yellow-300"
+                                        : "bg-white/70 text-gray-600 hover:bg-yellow-100 border-2 border-transparent"
+                                }`
+                            }, h('span', null, "🪴"), `Active (${activeCount})`),
+                            h('button', {
+                                onClick: () => setFilter("completed"),
+                                className: `px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
+                                    filter === "completed"
+                                        ? "bg-gradient-to-r from-purple-200 to-pink-200 text-purple-800 shadow-lg border-2 border-purple-300"
+                                        : "bg-white/70 text-gray-600 hover:bg-purple-100 border-2 border-transparent"
+                                }`
+                            }, h('span', null, "🌸"), `Done (${completedCount})`)
+                        ),
 
-                            {/* Filter buttons */}
-                            <div className="flex gap-2 mb-6 justify-center flex-wrap">
-                                <button
-                                    onClick={() => setFilter("all")}
-                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
-                                        filter === "all"
-                                            ? "bg-gradient-to-r from-green-200 to-emerald-200 text-green-800 shadow-lg border-2 border-green-300"
-                                            : "bg-white/70 text-gray-600 hover:bg-green-100 border-2 border-transparent"
-                                    }`}
-                                >
-                                    <span>🌱</span>
-                                    All ({tasks.length})
-                                </button>
-                                <button
-                                    onClick={() => setFilter("urgent")}
-                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
-                                        filter === "urgent"
-                                            ? "bg-gradient-to-r from-red-200 to-pink-200 text-red-800 shadow-lg border-2 border-red-300"
-                                            : "bg-white/70 text-gray-600 hover:bg-red-100 border-2 border-transparent"
-                                    }`}
-                                >
-                                    <span>⭐</span>
-                                    Priority ({urgentCount})
-                                </button>
-                                <button
-                                    onClick={() => setFilter("easy")}
-                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
-                                        filter === "easy"
-                                            ? "bg-gradient-to-r from-blue-200 to-cyan-200 text-blue-800 shadow-lg border-2 border-blue-300"
-                                            : "bg-white/70 text-gray-600 hover:bg-blue-100 border-2 border-transparent"
-                                    }`}
-                                >
-                                    <span>🪽</span>
-                                    Quick ({easyCount})
-                                </button>
-                                <button
-                                    onClick={() => setFilter("active")}
-                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
-                                        filter === "active"
-                                            ? "bg-gradient-to-r from-yellow-200 to-orange-200 text-orange-800 shadow-lg border-2 border-yellow-300"
-                                            : "bg-white/70 text-gray-600 hover:bg-yellow-100 border-2 border-transparent"
-                                    }`}
-                                >
-                                    <span>🪴</span>
-                                    Active ({activeCount})
-                                </button>
-                                <button
-                                    onClick={() => setFilter("completed")}
-                                    className={`px-4 py-2 rounded-full transition-all transform hover:scale-105 flex items-center gap-2 ${
-                                        filter === "completed"
-                                            ? "bg-gradient-to-r from-purple-200 to-pink-200 text-purple-800 shadow-lg border-2 border-purple-300"
-                                            : "bg-white/70 text-gray-600 hover:bg-purple-100 border-2 border-transparent"
-                                    }`}
-                                >
-                                    <span>🌸</span>
-                                    Done ({completedCount})
-                                </button>
-                            </div>
+                        // Task list
+                        h('div', { className: "space-y-3 mb-6" },
+                            filteredTasks.length === 0 ? 
+                                h('div', { className: "text-center py-8" },
+                                    h('div', { className: "text-6xl mb-4" }, "🔮"),
+                                    h('p', { className: "text-gray-500" },
+                                        filter === "active" ? "No active tasks!" :
+                                        filter === "completed" ? "No completed tasks yet!" :
+                                        filter === "urgent" ? "No priority tasks!" :
+                                        filter === "easy" ? "No quick tasks!" :
+                                        "No tasks yet. Add one above!"
+                                    )
+                                ) :
+                                filteredTasks.map((task) => 
+                                    h('div', { key: task.id, className: "space-y-0" },
+                                        h('div', {
+                                            draggable: true,
+                                            onDragStart: (e) => handleDragStart(e, task),
+                                            onDragOver: handleDragOver,
+                                            onDragEnter: handleDragEnter,
+                                            onDrop: (e) => handleDrop(e, task),
+                                            className: `group flex items-center gap-4 p-4 rounded-2xl transition-all transform hover:scale-[1.02] cursor-move relative ${
+                                                task.completed
+                                                    ? "bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-200 shadow-lg"
+                                                    : task.urgent
+                                                    ? "bg-gradient-to-r from-pink-50 to-red-50 border-2 border-pink-300 hover:from-pink-100 hover:to-red-100 shadow-md hover:shadow-lg"
+                                                    : task.easy
+                                                    ? "bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-300 hover:from-blue-100 hover:to-cyan-100 shadow-md hover:shadow-lg"
+                                                    : "bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 hover:from-pink-100 hover:to-purple-100 shadow-md hover:shadow-lg"
+                                            } ${draggedItem?.id === task.id ? "opacity-50" : ""}`
+                                        },
+                                            // Priority indicator
+                                            task.urgent && !task.completed && h('div', {
+                                                className: "absolute -top-2 -left-2 bg-gradient-to-r from-pink-400 to-red-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
+                                            }, h('span', null, "⭐"), h('span', { className: "font-medium" }, "PRIORITY")),
 
-                            {/* Task list */}
-                            <div className="space-y-3 mb-6">
-                                {filteredTasks.length === 0 ? (
-                                    <div className="text-center py-8">
-                                        <div className="text-6xl mb-4">🔮</div>
-                                        <p className="text-gray-500">
-                                            {filter === "active"
-                                                ? "No active tasks!"
-                                                : filter === "completed"
-                                                ? "No completed tasks yet!"
-                                                : filter === "urgent"
-                                                ? "No priority tasks!"
-                                                : filter === "easy"
-                                                ? "No quick tasks!"
-                                                : "No tasks yet. Add one above!"}
-                                        </p>
-                                    </div>
-                                ) : (
-                                    filteredTasks.map((task) => (
-                                        <div key={task.id} className="space-y-0">
-                                            <div
-                                                draggable
-                                                onDragStart={(e) => handleDragStart(e, task)}
-                                                onDragOver={handleDragOver}
-                                                onDragEnter={handleDragEnter}
-                                                onDrop={(e) => handleDrop(e, task)}
-                                                className={`group flex items-center gap-4 p-4 rounded-2xl transition-all transform hover:scale-[1.02] cursor-move relative ${
-                                                    task.completed
-                                                        ? "bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-200 shadow-lg"
-                                                        : task.urgent
-                                                        ? "bg-gradient-to-r from-pink-50 to-red-50 border-2 border-pink-300 hover:from-pink-100 hover:to-red-100 shadow-md hover:shadow-lg"
-                                                        : task.easy
-                                                        ? "bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-300 hover:from-blue-100 hover:to-cyan-100 shadow-md hover:shadow-lg"
-                                                        : "bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 hover:from-pink-100 hover:to-purple-100 shadow-md hover:shadow-lg"
-                                                } ${draggedItem?.id === task.id ? "opacity-50" : ""}`}
-                                            >
-                                                {/* Priority indicator */}
-                                                {task.urgent && !task.completed && (
-                                                    <div className="absolute -top-2 -left-2 bg-gradient-to-r from-pink-400 to-red-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1">
-                                                        <span>⭐</span>
-                                                        <span className="font-medium">PRIORITY</span>
-                                                    </div>
-                                                )}
+                                            // Quick indicator
+                                            task.easy && !task.completed && h('div', {
+                                                className: "absolute -top-2 -left-2 bg-gradient-to-r from-blue-400 to-cyan-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
+                                            }, h('span', null, "🪽"), h('span', { className: "font-medium" }, "QUICK")),
 
-                                                {/* Quick indicator */}
-                                                {task.easy && !task.completed && (
-                                                    <div className="absolute -top-2 -left-2 bg-gradient-to-r from-blue-400 to-cyan-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1">
-                                                        <span>🪽</span>
-                                                        <span className="font-medium">QUICK</span>
-                                                    </div>
-                                                )}
+                                            // Main task row
+                                            h('div', { className: "flex items-center gap-4 w-full" },
+                                                // Drag handle
+                                                h('div', { className: "flex-shrink-0 text-gray-400 cursor-move opacity-0 group-hover:opacity-100 transition-opacity" },
+                                                    h('span', { className: "text-lg" }, "⋮⋮")
+                                                ),
 
-                                                {/* Main task row */}
-                                                <div className="flex items-center gap-4 w-full">
-                                                    {/* Drag handle */}
-                                                    <div className="flex-shrink-0 text-gray-400 cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <span className="text-lg">⋮⋮</span>
-                                                    </div>
+                                                h('button', {
+                                                    onClick: () => toggleTask(task.id),
+                                                    className: `flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all transform hover:scale-110 ${
+                                                        task.completed
+                                                            ? "bg-gradient-to-r from-green-400 to-emerald-400 shadow-lg"
+                                                            : "bg-gradient-to-r from-pink-200 to-red-200 hover:from-pink-300 hover:to-red-300 border-2 border-pink-300"
+                                                    }`
+                                                },
+                                                    task.completed ? 
+                                                        h('span', { className: "text-white text-sm" }, "✓") :
+                                                        h('span', { className: "text-lg" }, "🍓")
+                                                ),
 
-                                                    <button
-                                                        onClick={() => toggleTask(task.id)}
-                                                        className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all transform hover:scale-110 ${
-                                                            task.completed
-                                                                ? "bg-gradient-to-r from-green-400 to-emerald-400 shadow-lg"
-                                                                : "bg-gradient-to-r from-pink-200 to-red-200 hover:from-pink-300 hover:to-red-300 border-2 border-pink-300"
-                                                        }`}
-                                                    >
-                                                        {task.completed ? (
-                                                            <span className="text-white text-sm">✓</span>
-                                                        ) : (
-                                                            <span className="text-lg">🍓</span>
-                                                        )}
-                                                    </button>
+                                                h('span', {
+                                                    className: `flex-1 transition-all ${
+                                                        task.completed
+                                                            ? "text-green-700 line-through opacity-75"
+                                                            : "text-gray-800"
+                                                    }`
+                                                },
+                                                    task.text,
+                                                    task.subtasks.length > 0 && h('span', { className: "ml-2 text-xs text-gray-500" },
+                                                        `(${task.subtasks.filter((sub) => sub.completed).length}/${task.subtasks.length})`
+                                                    )
+                                                ),
 
-                                                    <span
-                                                        className={`flex-1 transition-all ${
-                                                            task.completed
-                                                                ? "text-green-700 line-through opacity-75"
-                                                                : "text-gray-800"
-                                                        }`}
-                                                    >
-                                                        {task.text}
-                                                        {task.subtasks.length > 0 && (
-                                                            <span className="ml-2 text-xs text-gray-500">
-                                                                ({task.subtasks.filter((sub) => sub.completed).length}/{task.subtasks.length})
-                                                            </span>
-                                                        )}
-                                                    </span>
+                                                // Subtask toggle button
+                                                task.subtasks.length > 0 && h('button', {
+                                                    onClick: (e) => {
+                                                        e.stopPropagation();
+                                                        toggleExpanded(task.id);
+                                                    },
+                                                    className: "flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-all transform hover:scale-110 flex items-center justify-center"
+                                                },
+                                                    h('span', { className: `text-xs transition-transform ${expandedTasks.has(task.id) ? "rotate-90" : ""}` }, "▶")
+                                                ),
 
-                                                    {/* Subtask toggle button */}
-                                                    {task.subtasks.length > 0 && (
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                toggleExpanded(task.id);
-                                                            }}
-                                                            className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-all transform hover:scale-110 flex items-center justify-center"
-                                                        >
-                                                            <span className={`text-xs transition-transform ${expandedTasks.has(task.id) ? "rotate-90" : ""}`}>
-                                                                ▶
-                                                            </span>
-                                                        </button>
-                                                    )}
-
-                                                    {/* Priority and Quick toggle buttons */}
-                                                    {!task.completed && (
-                                                        <>
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    toggleUrgent(task.id);
-                                                                }}
-                                                                className={`flex-shrink-0 w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
-                                                                    task.urgent
-                                                                        ? "bg-gradient-to-r from-pink-400 to-red-400 text-white shadow-lg"
-                                                                        : "bg-gray-100 hover:bg-pink-100 text-gray-400 hover:text-pink-500"
-                                                                }`}
-                                                                title={task.urgent ? "Remove priority" : "Mark as priority"}
-                                                            >
-                                                                <span className="text-sm">⭐</span>
-                                                            </button>
-
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    toggleEasy(task.id);
-                                                                }}
-                                                                className={`flex-shrink-0 w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
-                                                                    task.easy
-                                                                        ? "bg-gradient-to-r from-blue-400 to-cyan-400 text-white shadow-lg"
-                                                                        : "bg-gray-100 hover:bg-blue-100 text-gray-400 hover:text-blue-500"
-                                                                }`}
-                                                                title={task.easy ? "Remove quick tag" : "Mark as quick task"}
-                                                            >
-                                                                <span className="text-sm">🪽</span>
-                                                            </button>
-                                                        </>
-                                                    )}
-
-                                                    {/* Add subtask button */}
-                                                    <button
-                                                        onClick={(e) => {
+                                                // Priority and Quick toggle buttons
+                                                !task.completed && [
+                                                    h('button', {
+                                                        key: "urgent",
+                                                        onClick: (e) => {
                                                             e.stopPropagation();
-                                                            const newExpanded = new Set(expandedTasks);
-                                                            newExpanded.add(task.id);
-                                                            setExpandedTasks(newExpanded);
-                                                        }}
-                                                        className="flex-shrink-0 w-7 h-7 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-500 hover:text-purple-600 transition-all transform hover:scale-110 flex items-center justify-center opacity-0 group-hover:opacity-100"
-                                                        title="Add subtask"
-                                                    >
-                                                        <Plus size={12} />
-                                                    </button>
+                                                            toggleUrgent(task.id);
+                                                        },
+                                                        className: `flex-shrink-0 w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
+                                                            task.urgent
+                                                                ? "bg-gradient-to-r from-pink-400 to-red-400 text-white shadow-lg"
+                                                                : "bg-gray-100 hover:bg-pink-100 text-gray-400 hover:text-pink-500"
+                                                        }`,
+                                                        title: task.urgent ? "Remove priority" : "Mark as priority"
+                                                    }, h('span', { className: "text-sm" }, "⭐")),
 
-                                                    <button
-                                                        onClick={(e) => {
+                                                    h('button', {
+                                                        key: "easy",
+                                                        onClick: (e) => {
                                                             e.stopPropagation();
-                                                            deleteTask(task.id);
-                                                        }}
-                                                        className="flex-shrink-0 w-7 h-7 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 transition-all transform hover:scale-110 flex items-center justify-center opacity-0 group-hover:opacity-100"
-                                                    >
-                                                        <X size={14} />
-                                                    </button>
-                                                </div>
-                                            </div>
+                                                            toggleEasy(task.id);
+                                                        },
+                                                        className: `flex-shrink-0 w-8 h-8 rounded-full transition-all transform hover:scale-110 flex items-center justify-center ${
+                                                            task.easy
+                                                                ? "bg-gradient-to-r from-blue-400 to-cyan-400 text-white shadow-lg"
+                                                                : "bg-gray-100 hover:bg-blue-100 text-gray-400 hover:text-blue-500"
+                                                        }`,
+                                                        title: task.easy ? "Remove quick tag" : "Mark as quick task"
+                                                    }, h('span', { className: "text-sm" }, "🪽"))
+                                                ],
 
-                                            {/* Subtasks section */}
-                                            {expandedTasks.has(task.id) && (
-                                                <div className="mt-0 ml-16 mr-4 mb-4 space-y-2 bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-200">
-                                                    {/* Add new subtask */}
-                                                    <div className="flex gap-2 items-center">
-                                                        <span className="text-sm">🌱</span>
-                                                        <input
-                                                            type="text"
-                                                            value={newSubtask[task.id] || ""}
-                                                            onChange={(e) =>
-                                                                setNewSubtask({
-                                                                    ...newSubtask,
-                                                                    [task.id]: e.target.value,
-                                                                })
-                                                            }
-                                                            onKeyPress={(e) => {
-                                                                if (e.key === "Enter") {
-                                                                    addSubtask(task.id);
-                                                                }
-                                                            }}
-                                                            placeholder="Add a subtask..."
-                                                            className="flex-1 px-3 py-2 bg-white/70 border border-purple-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition-all text-sm text-gray-700"
-                                                        />
-                                                        <button
-                                                            onClick={() => addSubtask(task.id)}
-                                                            className="px-3 py-2 bg-gradient-to-r from-purple-300 to-pink-300 text-white rounded-full hover:from-purple-400 hover:to-pink-400 transition-all transform hover:scale-105 shadow-sm"
-                                                        >
-                                                            <Plus size={14} />
-                                                        </button>
-                                                    </div>
+                                                // Add subtask button
+                                                h('button', {
+                                                    onClick: (e) => {
+                                                        e.stopPropagation();
+                                                        const newExpanded = new Set(expandedTasks);
+                                                        newExpanded.add(task.id);
+                                                        setExpandedTasks(newExpanded);
+                                                    },
+                                                    className: "flex-shrink-0 w-7 h-7 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-500 hover:text-purple-600 transition-all transform hover:scale-110 flex items-center justify-center opacity-0 group-hover:opacity-100",
+                                                    title: "Add subtask"
+                                                }, h(Plus, { size: 12 })),
 
-                                                    {/* Bulk subtask toggle */}
-                                                    <div className="flex justify-center">
-                                                        <button
-                                                            onClick={() =>
-                                                                setShowBulkSubtask({
-                                                                    ...showBulkSubtask,
-                                                                    [task.id]: !showBulkSubtask[task.id],
-                                                                })
-                                                            }
-                                                            className="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-1"
-                                                        >
-                                                            {showBulkSubtask[task.id] ? "✕ Close bulk add" : "🪄 Add multiple subtasks"}
-                                                        </button>
-                                                    </div>
+                                                h('button', {
+                                                    onClick: (e) => {
+                                                        e.stopPropagation();
+                                                        deleteTask(task.id);
+                                                    },
+                                                    className: "flex-shrink-0 w-7 h-7 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 transition-all transform hover:scale-110 flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                                }, h(X, { size: 14 }))
+                                            )
+                                        ),
 
-                                                    {/* Bulk subtask area */}
-                                                    {showBulkSubtask[task.id] && (
-                                                        <div className="space-y-2">
-                                                            <textarea
-                                                                value={bulkSubtasks[task.id] || ""}
-                                                                onChange={(e) =>
-                                                                    setBulkSubtasks({
-                                                                        ...bulkSubtasks,
-                                                                        [task.id]: e.target.value,
-                                                                    })
-                                                                }
-                                                                placeholder="Add multiple subtasks, one per line:
+                                        // Subtasks section
+                                        expandedTasks.has(task.id) && h('div', { className: "mt-0 ml-16 mr-4 mb-4 space-y-2 bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-200" },
+                                            // Add new subtask
+                                            h('div', { className: "flex gap-2 items-center" },
+                                                h('span', { className: "text-sm" }, "🌱"),
+                                                h('input', {
+                                                    type: "text",
+                                                    value: newSubtask[task.id] || "",
+                                                    onChange: (e) =>
+                                                        setNewSubtask({
+                                                            ...newSubtask,
+                                                            [task.id]: e.target.value,
+                                                        }),
+                                                    onKeyPress: (e) => {
+                                                        if (e.key === "Enter") {
+                                                            addSubtask(task.id);
+                                                        }
+                                                    },
+                                                    placeholder: "Add a subtask...",
+                                                    className: "flex-1 px-3 py-2 bg-white/70 border border-purple-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition-all text-sm text-gray-700"
+                                                }),
+                                                h('button', {
+                                                    onClick: () => addSubtask(task.id),
+                                                    className: "px-3 py-2 bg-gradient-to-r from-purple-300 to-pink-300 text-white rounded-full hover:from-purple-400 hover:to-pink-400 transition-all transform hover:scale-105 shadow-sm"
+                                                }, h(Plus, { size: 14 }))
+                                            ),
 
-Subtask 1
-Subtask 2
-Subtask 3"
-                                                                rows={4}
-                                                                className="w-full px-3 py-2 bg-white/70 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition-all text-sm text-gray-700 resize-none"
-                                                            />
-                                                            <div className="flex gap-2 justify-end">
-                                                                <button
-                                                                    onClick={() => {
-                                                                        setBulkSubtasks({
-                                                                            ...bulkSubtasks,
-                                                                            [task.id]: "",
-                                                                        });
-                                                                        setShowBulkSubtask({
-                                                                            ...showBulkSubtask,
-                                                                            [task.id]: false,
-                                                                        });
-                                                                    }}
-                                                                    className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors text-sm"
-                                                                >
-                                                                    Cancel
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => addBulkSubtasks(task.id)}
-                                                                    className="px-4 py-1 bg-gradient-to-r from-purple-300 to-pink-300 text-white rounded-full hover:from-purple-400 hover:to-pink-400 transition-all transform hover:scale-105 shadow-sm flex items-center gap-1 text-sm"
-                                                                >
-                                                                    <span>🪄</span>
-                                                                    Add All
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    )}
+                                            // Bulk subtask toggle
+                                            h('div', { className: "flex justify-center" },
+                                                h('button', {
+                                                    onClick: () =>
+                                                        setShowBulkSubtask({
+                                                            ...showBulkSubtask,
+                                                            [task.id]: !showBulkSubtask[task.id],
+                                                        }),
+                                                    className: "text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-1"
+                                                }, showBulkSubtask[task.id] ? "✕ Close bulk add" : "🪄 Add multiple subtasks")
+                                            ),
 
-                                                    {/* Existing subtasks */}
-                                                    {task.subtasks.map((subtask) => (
-                                                        <div key={subtask.id} className="flex items-center gap-3 py-2">
-                                                            <button
-                                                                onClick={() => toggleSubtask(task.id, subtask.id)}
-                                                                className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all transform hover:scale-110 ${
-                                                                    subtask.completed
-                                                                        ? "bg-gradient-to-r from-green-300 to-emerald-300 shadow-sm"
-                                                                        : "bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 border border-purple-200"
-                                                                }`}
-                                                            >
-                                                                {subtask.completed ? (
-                                                                    <span className="text-white text-xs">✓</span>
-                                                                ) : (
-                                                                    <span className="text-sm">🌸</span>
-                                                                )}
-                                                            </button>
+                                            // Bulk subtask area
+                                            showBulkSubtask[task.id] && h('div', { className: "space-y-2" },
+                                                h('textarea', {
+                                                    value: bulkSubtasks[task.id] || "",
+                                                    onChange: (e) =>
+                                                        setBulkSubtasks({
+                                                            ...bulkSubtasks,
+                                                            [task.id]: e.target.value,
+                                                        }),
+                                                    placeholder: "Add multiple subtasks, one per line:\n\nSubtask 1\nSubtask 2\nSubtask 3",
+                                                    rows: 4,
+                                                    className: "w-full px-3 py-2 bg-white/70 border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition-all text-sm text-gray-700 resize-none"
+                                                }),
+                                                h('div', { className: "flex gap-2 justify-end" },
+                                                    h('button', {
+                                                        onClick: () => {
+                                                            setBulkSubtasks({
+                                                                ...bulkSubtasks,
+                                                                [task.id]: "",
+                                                            });
+                                                            setShowBulkSubtask({
+                                                                ...showBulkSubtask,
+                                                                [task.id]: false,
+                                                            });
+                                                        },
+                                                        className: "px-3 py-1 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors text-sm"
+                                                    }, "Cancel"),
+                                                    h('button', {
+                                                        onClick: () => addBulkSubtasks(task.id),
+                                                        className: "px-4 py-1 bg-gradient-to-r from-purple-300 to-pink-300 text-white rounded-full hover:from-purple-400 hover:to-pink-400 transition-all transform hover:scale-105 shadow-sm flex items-center gap-1 text-sm"
+                                                    }, h('span', null, "🪄"), "Add All")
+                                                )
+                                            ),
 
-                                                            <span
-                                                                className={`flex-1 text-sm transition-all ${
-                                                                    subtask.completed
-                                                                        ? "text-green-600 line-through opacity-75"
-                                                                        : "text-gray-700"
-                                                                }`}
-                                                            >
-                                                                {subtask.text}
-                                                            </span>
+                                            // Existing subtasks
+                                            task.subtasks.map((subtask) =>
+                                                h('div', { key: subtask.id, className: "flex items-center gap-3 py-2" },
+                                                    h('button', {
+                                                        onClick: () => toggleSubtask(task.id, subtask.id),
+                                                        className: `flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all transform hover:scale-110 ${
+                                                            subtask.completed
+                                                                ? "bg-gradient-to-r from-green-300 to-emerald-300 shadow-sm"
+                                                                : "bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 border border-purple-200"
+                                                        }`
+                                                    },
+                                                        subtask.completed ?
+                                                            h('span', { className: "text-white text-xs" }, "✓") :
+                                                            h('span', { className: "text-sm" }, "🌸")
+                                                    ),
 
-                                                            <button
-                                                                onClick={() => deleteSubtask(task.id, subtask.id)}
-                                                                className="flex-shrink-0 w-5 h-5 rounded-full bg-red-100 hover:bg-red-200 text-red-400 hover:text-red-500 transition-all transform hover:scale-110 flex items-center justify-center"
-                                                            >
-                                                                <X size={10} />
-                                                            </button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))
-                                )}
-                            </div>
+                                                    h('span', {
+                                                        className: `flex-1 text-sm transition-all ${
+                                                            subtask.completed
+                                                                ? "text-green-600 line-through opacity-75"
+                                                                : "text-gray-700"
+                                                        }`
+                                                    }, subtask.text),
 
-                            {/* Import/Export buttons */}
-                            <div className="space-y-3">
-                                {completedCount > 0 && (
-                                    <button
-                                        onClick={clearCompleted}
-                                        className="w-full py-3 text-sm bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-purple-200"
-                                    >
-                                        <span>🌸</span>
-                                        Clear {completedCount} completed task{completedCount !== 1 ? "s" : ""}
-                                        <span>🌸</span>
-                                    </button>
-                                )}
+                                                    h('button', {
+                                                        onClick: () => deleteSubtask(task.id, subtask.id),
+                                                        className: "flex-shrink-0 w-5 h-5 rounded-full bg-red-100 hover:bg-red-200 text-red-400 hover:text-red-500 transition-all transform hover:scale-110 flex items-center justify-center"
+                                                    }, h(X, { size: 10 }))
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                        ),
 
-                                {tasks.length > 0 && (
-                                    <>
-                                        <button
-                                            onClick={exportTasks}
-                                            className="w-full py-3 text-sm bg-gradient-to-r from-blue-100 to-cyan-100 hover:from-blue-200 hover:to-cyan-200 text-blue-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-blue-200"
-                                        >
-                                            <span>🖋️</span>
-                                            Copy All Tasks (Backup)
-                                            <span>🖋️</span>
-                                        </button>
+                        // Import/Export buttons
+                        h('div', { className: "space-y-3" },
+                            completedCount > 0 && h('button', {
+                                onClick: clearCompleted,
+                                className: "w-full py-3 text-sm bg-gradient-to-r from-purple-100 to-pink-100 hover:from-purple-200 hover:to-pink-200 text-purple-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-purple-200"
+                            }, h('span', null, "🌸"), `Clear ${completedCount} completed task${completedCount !== 1 ? "s" : ""}`, h('span', null, "🌸")),
 
-                                        <button
-                                            onClick={exportAsJSON}
-                                            className="w-full py-3 text-sm bg-gradient-to-r from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 text-green-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-green-200"
-                                        >
-                                            <span>🌼</span>
-                                            Download as File
-                                            <span>🌼</span>
-                                        </button>
-                                    </>
-                                )}
+                            tasks.length > 0 && [
+                                h('button', {
+                                    key: "export",
+                                    onClick: exportTasks,
+                                    className: "w-full py-3 text-sm bg-gradient-to-r from-blue-100 to-cyan-100 hover:from-blue-200 hover:to-cyan-200 text-blue-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-blue-200"
+                                }, h('span', null, "🖋️"), "Copy All Tasks (Backup)", h('span', null, "🖋️")),
 
-                                <div className="relative">
-                                    <input
-                                        type="file"
-                                        accept=".json"
-                                        onChange={importFromJSON}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                        id="importFile"
-                                    />
-                                    <label
-                                        htmlFor="importFile"
-                                        className="w-full py-3 text-sm bg-gradient-to-r from-yellow-100 to-orange-100 hover:from-yellow-200 hover:to-orange-200 text-orange-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-yellow-200 cursor-pointer block"
-                                    >
-                                        <span>💌</span>
-                                        Import from File
-                                        <span>💌</span>
-                                    </label>
-                                </div>
-                            </div>
+                                h('button', {
+                                    key: "json",
+                                    onClick: exportAsJSON,
+                                    className: "w-full py-3 text-sm bg-gradient-to-r from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 text-green-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-green-200"
+                                }, h('span', null, "🌼"), "Download as File", h('span', null, "🌼"))
+                            ],
 
-                            {/* Summary with celebration */}
-                            {tasks.length > 0 && (
-                                <div className="mt-6 pt-4 border-t-2 border-pink-200 text-center">
-                                    {activeCount === 0 && tasks.length > 0 ? (
-                                        <div className="text-lg font-medium bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-                                            🎉 All tasks completed! You're amazing! 🎉
-                                            <div className="flex justify-center gap-2 mt-2 text-2xl">
-                                                <span className="animate-bounce">🐝</span>
-                                                <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>🍄</span>
-                                                <span className="animate-bounce" style={{ animationDelay: "0.4s" }}>✨</span>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="text-gray-600 flex items-center justify-center gap-2">
-                                            <span>🌱</span>
-                                            <span>{activeCount} task{activeCount !== 1 ? "s" : ""} remaining</span>
-                                            <span>🌱</span>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                            h('div', { className: "relative" },
+                                h('input', {
+                                    type: "file",
+                                    accept: ".json",
+                                    onChange: importFromJSON,
+                                    className: "absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10",
+                                    id: "importFile"
+                                }),
+                                h('label', {
+                                    htmlFor: "importFile",
+                                    className: "w-full py-3 text-sm bg-gradient-to-r from-yellow-100 to-orange-100 hover:from-yellow-200 hover:to-orange-200 text-orange-700 rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-yellow-200 cursor-pointer block"
+                                }, h('span', null, "💌"), "Import from File", h('span', null, "💌"))
+                            )
+                        ),
 
-                            {/* Bottom decorative elements */}
-                            <div className="absolute bottom-2 left-4 text-pink-300 text-lg">🍄</div>
-                            <div className="absolute bottom-2 right-4 text-purple-300 text-lg">🐛</div>
-                        </div>
+                        // Summary with celebration
+                        tasks.length > 0 && h('div', { className: "mt-6 pt-4 border-t-2 border-pink-200 text-center" },
+                            activeCount === 0 && tasks.length > 0 ?
+                                h('div', { className: "text-lg font-medium bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent" },
+                                    "🎉 All tasks completed! You're amazing! 🎉",
+                                    h('div', { className: "flex justify-center gap-2 mt-2 text-2xl" },
+                                        h('span', { className: "animate-bounce" }, "🐝"),
+                                        h('span', { className: "animate-bounce", style: { animationDelay: "0.2s" } }, "🍄"),
+                                        h('span', { className: "animate-bounce", style: { animationDelay: "0.4s" } }, "✨")
+                                    )
+                                ) :
+                                h('div', { className: "text-gray-600 flex items-center justify-center gap-2" },
+                                    h('span', null, "🌱"),
+                                    h('span', null, `${activeCount} task${activeCount !== 1 ? "s" : ""} remaining`),
+                                    h('span', null, "🌱")
+                                )
+                        ),
 
-                        {/* More floating decorations */}
-                        <div className="absolute bottom-8 left-8 text-green-300 animate-bounce" style={{ animationDelay: "1.5s" }}>🦋</div>
-                        <div className="absolute bottom-12 right-12 text-pink-300 animate-bounce" style={{ animationDelay: "0.5s" }}>🐝</div>
-                    </div>
-                </div>
+                        // Bottom decorative elements
+                        h('div', { className: "absolute bottom-2 left-4 text-pink-300 text-lg" }, "🍄"),
+                        h('div', { className: "absolute bottom-2 right-4 text-purple-300 text-lg" }, "🐛")
+                    ),
+
+                    // More floating decorations
+                    h('div', { className: "absolute bottom-8 left-8 text-green-300 animate-bounce", style: { animationDelay: "1.5s" } }, "🦋"),
+                    h('div', { className: "absolute bottom-12 right-12 text-pink-300 animate-bounce", style: { animationDelay: "0.5s" } }, "🐝")
+                )
             );
         }
 
-        ReactDOM.render(<TodoList />, document.getElementById('root'));
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(TodoList));
     </script>
 </body>
 </html>
