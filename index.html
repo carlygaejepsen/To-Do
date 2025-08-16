@@ -679,7 +679,7 @@
                                             onDragOver: handleDragOver,
                                             onDragEnter: handleDragEnter,
                                             onDrop: (e) => handleDrop(e, task),
-                                            className: `group flex items-center gap-4 p-4 rounded-2xl transition-all transform hover:scale-[1.02] cursor-move relative ${
+                                            className: `group p-4 rounded-2xl transition-all transform hover:scale-[1.02] cursor-move relative ${
                                                 task.completed
                                                     ? "bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-200 shadow-lg"
                                                     : task.urgent
@@ -691,20 +691,20 @@
                                                     : "bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 hover:from-pink-100 hover:to-purple-100 shadow-md hover:shadow-lg"
                                             } ${draggedItem?.id === task.id ? "opacity-50" : ""}`
                                         },
-                                            // Project indicator
-                                            task.project && !task.completed && h('div', {
-                                                className: "absolute -top-2 -left-2 bg-gradient-to-r from-indigo-400 to-violet-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
-                                            }, h('span', null, "🐌"), h('span', { className: "font-medium" }, "PROJECT")),
+                                            // Tag indicators at top
+                                            (task.project && !task.completed) || (task.urgent && !task.completed) || (task.easy && !task.completed) ? h('div', { className: "mb-2 flex justify-center" },
+                                                task.project && !task.completed && h('div', {
+                                                    className: "bg-gradient-to-r from-indigo-400 to-violet-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
+                                                }, h('span', null, "🐌"), h('span', { className: "font-medium" }, "PROJECT")),
+                                                
+                                                task.urgent && !task.completed && h('div', {
+                                                    className: "bg-gradient-to-r from-pink-400 to-red-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
+                                                }, h('span', null, "⭐"), h('span', { className: "font-medium" }, "PRIORITY")),
 
-                                            // Priority indicator
-                                            task.urgent && !task.completed && h('div', {
-                                                className: "absolute -top-2 -left-2 bg-gradient-to-r from-pink-400 to-red-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
-                                            }, h('span', null, "⭐"), h('span', { className: "font-medium" }, "PRIORITY")),
-
-                                            // Quick indicator
-                                            task.easy && !task.completed && h('div', {
-                                                className: "absolute -top-2 -left-2 bg-gradient-to-r from-blue-400 to-cyan-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
-                                            }, h('span', null, "🪽"), h('span', { className: "font-medium" }, "QUICK")),
+                                                task.easy && !task.completed && h('div', {
+                                                    className: "bg-gradient-to-r from-blue-400 to-cyan-400 text-white text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1"
+                                                }, h('span', null, "🪽"), h('span', { className: "font-medium" }, "QUICK"))
+                                            ) : null,
 
                                             // Main task row
                                             h('div', { className: "flex items-center gap-4 w-full" },
